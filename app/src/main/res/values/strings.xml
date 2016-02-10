@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Memory</string>
+    <string name="diffEasy">Facil</string>
+    <string name="diffNormal">Normal</string>
+    <string name="diffHard">Dificil</string>
+    <string name="bttPlay">Jugar</string>
+    <string name="timeLeft">Tiempo restante:  %1$s</string>
+    <string name="estado">"estado: "</string>
+    <string name="wined">Ganada</string>
+    <string name="loss">Perdida</string>
+    <string name="endGame">Juego finalizado</string>
+    <string name="newGameBtt">Nueva partida</string>
+</resources>
