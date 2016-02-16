@@ -76,6 +76,7 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
                 break;
             default:
                 Toast.makeText(this, "dificulat invalida", Toast.LENGTH_LONG).show();
+                finish();
                 break;
         }
     }
@@ -157,8 +158,7 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
 
         @Override
         public void onTick(long millisUntilFinished) {
-            Date date = new Date(millisUntilFinished);
-            target.setText(String.format(getString(R.string.timeLeft), formater.format(date)));
+            target.setText(String.format(getString(R.string.timeLeft), formater.format(new Date(millisUntilFinished))));
         }
 
         @Override
