@@ -93,23 +93,19 @@ public class Partida {
             @Override
             protected Void doInBackground(Void... params) {
                 synchronized (clickLocker) {// esparar si hay otros clicks sin acavar
-                    try {
-                        Thread.sleep(100);//retardant
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                     return null;
                 }
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
+                //esto se ejecuta en el mainThread
                 __click(position);
                 if (isWined()) {
                     finalizar();
                 }
             }
-        }.execute();
+        }.execute();//esto hace que los clicks se procesen después de la actulizacion por defecto del grid, cuando el mainThread vuelva a estar libre
     }
 
 
@@ -123,8 +119,11 @@ public class Partida {
         }
     }
 
+    android.os.Handler segundaCartaHandler = new android.os.Handler();
+
     private void segundaCarta(int position) {
         if (cardClickIdx.get(0) != position) {// si la carta es diferente sino la ignoramos
+            segundaCartaHandler.removeCallbacksAndMessages(null);//eliminar todos los pendientes
             Carta primera = cartas.get(cardClickIdx.get(0));
             Carta segona = cartas.get(position);
             if (primera.getCartImageId() == segona.getCartImageId()) {
@@ -135,6 +134,13 @@ public class Partida {
             } else {
                 primera.tapar();
                 segona.tapar();
+                //tapar a los 2s
+                segundaCartaHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        activity.refreshItems();
+                    }
+                }, 2000);
             }
             cardClickIdx.clear();
         }

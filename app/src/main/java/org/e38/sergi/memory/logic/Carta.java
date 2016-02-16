@@ -29,7 +29,7 @@ public class Carta {
     }
 
     public void tapar() {
-        if (!solved) {//no es pot tapar una carta guañanada
+        if (!solved) {//no es pot tapar una carta solucionada
             destapada = false;
         }
     }
