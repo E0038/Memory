@@ -134,7 +134,7 @@ public class Partida {
             } else {
                 primera.tapar();
                 segona.tapar();
-                //tapar a los 2s
+                //actualizar a los 2s
                 segundaCartaHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
