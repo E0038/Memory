@@ -119,7 +119,7 @@ public class Partida {
         }
     }
 
-    android.os.Handler segundaCartaHandler = new android.os.Handler();
+    private final android.os.Handler segundaCartaHandler = new android.os.Handler();
 
     private void segundaCarta(int position) {
         if (cardClickIdx.get(0) != position) {// si la carta es diferente sino la ignoramos
