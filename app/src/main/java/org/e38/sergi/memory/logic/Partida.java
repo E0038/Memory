@@ -92,7 +92,7 @@ public class Partida {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                synchronized (clickLocker) {// esparar si hay otros clicks sin acavar
+                synchronized (clickLocker) {// wait others clicks , ya no hace falte
                     return null;
                 }
             }
@@ -105,7 +105,7 @@ public class Partida {
                     finalizar();
                 }
             }
-        }.execute();//esto hace que los clicks se procesen después de la actulizacion por defecto del grid, cuando el mainThread vuelva a estar libre
+        }.execute();//esto hace que los clicks se procesen después de la actualizar el grid, cuando el mainThread vuelva a estar libre
     }
 
 
@@ -150,7 +150,7 @@ public class Partida {
         FACIL(12, 200, 3),
         NORMAL(20, 120, 4),
         DIFICIL(24, 90, 4);
-        //nota: numCartas tiene que ser divisile por el numero de columnas
+        //nota: numCartas tiene que ser par y divisile por el numero de columnas
         private int numCartas, segundos, cols;
 
         Dificultat(int numCartas, int segundos, int cols) {
