@@ -37,6 +37,10 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
     private int cardWith, cardHeight;
     private CountDownTimer timer;
 
+    public GridView getMemoryGridView() {
+        return memoryGridView;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -118,6 +122,12 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
                     partida = partida.getNivel().getNewPartida(GameMemoryActivity.this);
                     configureGridView();
                     startTimer();
+                }
+            });
+            builder.setNegativeButton("Salir", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
                 }
             });
             builder.show();
