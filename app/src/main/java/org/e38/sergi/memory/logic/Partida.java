@@ -5,12 +5,13 @@ import android.os.AsyncTask;
 import org.e38.sergi.memory.R;
 import org.e38.sergi.memory.controlers.GameMemoryActivity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 
-public class Partida {
+public class Partida implements Serializable {
 
 
     public static final int ESTADO_ENCURSO = 0,
@@ -85,6 +86,10 @@ public class Partida {
      */
     public synchronized boolean isWined() {
         return solvedIdx.size() == cartas.size();
+    }
+
+    public Integer getEstado() {
+        return estado;
     }
 
     public void click(final int position) {

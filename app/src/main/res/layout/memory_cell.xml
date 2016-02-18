@@ -13,7 +13,8 @@
             android:id="@+id/imageViewCart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="#d50000" />
+            android:src="#d50000"
+            android:contentDescription="@string/card" />
     </FrameLayout>
 
 </LinearLayout>

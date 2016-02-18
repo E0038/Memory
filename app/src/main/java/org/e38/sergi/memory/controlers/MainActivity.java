@@ -2,6 +2,7 @@ package org.e38.sergi.memory.controlers;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.MainThread;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.RadioButton;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, GameMemoryActivity.class);
                 intent.putExtra(GameMemoryActivity.KEY_DIFICULTAT, dificultat);
                 startActivity(intent);
+                //finish();
             }
         });
     }

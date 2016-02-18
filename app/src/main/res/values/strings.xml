@@ -10,4 +10,6 @@
     <string name="loss">Perdida</string>
     <string name="endGame">Juego finalizado</string>
     <string name="newGameBtt">Nueva partida</string>
+    <string name="exit">Salir</string>
+    <string name="card">carta</string>
 </resources>

@@ -35,7 +35,7 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
     private Partida partida;
     private DisplayMetrics metrics;
     private int cardWith, cardHeight;
-    private CountDownTimer timer;
+    private Timer timer;
 
     public GridView getMemoryGridView() {
         return memoryGridView;
@@ -47,7 +47,13 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_memory);
-        initConfiguration();
+        if (savedInstanceState != null) {
+            partida = (Partida) savedInstanceState.getSerializable(KEY_PARTIDA);
+            configureGridView();
+            startTimer(savedInstanceState.getLong(KEY_REMAIN));
+        } else {
+            initConfiguration();
+        }
         findViewById(R.id.progressBarGameLoading).setVisibility(View.GONE);
     }
 
@@ -63,8 +69,14 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
         timer.cancel();//destruir el timer para evitar que siga vivo despes de ser destruida
     }
 
+    private void startTimer(Long time) {
+        timer = new Timer(time, (TextView) findViewById(R.id.textTimeLeft));
+        timer.start();
+    }
+
     private void startTimer() {
-        timer = new Timer(partida.getNivel().getSegundos() * 1000, (TextView) findViewById(R.id.textTimeLeft)).start();
+        timer = new Timer(partida.getNivel().getSegundos() * 1000, (TextView) findViewById(R.id.textTimeLeft));
+        timer.start();
     }
 
     private void configurePartida() {
@@ -110,27 +122,41 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
         memoryGridView.refreshDrawableState();
     }
 
+    private static final String KEY_REMAIN = "REMAIN";
+    private static final String KEY_PARTIDA = "PARTIDA";
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("partida", partida);
+        outState.putLong("remain", timer.getUnintilFinished());
+
+    }
+
     public void onFinalize() {
         timer.cancel();
         if (!(this.isFinishing() || isDestroyed())) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(getString(R.string.estado) + (partida.isWined() ? getString(R.string.wined) : getString(R.string.loss)));
-            builder.setTitle(R.string.endGame);
-            builder.setNeutralButton(R.string.newGameBtt, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    partida = partida.getNivel().getNewPartida(GameMemoryActivity.this);
-                    configureGridView();
-                    startTimer();
-                }
-            });
-            builder.setNegativeButton("Salir", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    finish();
-                }
-            });
-            builder.show();
+            new AlertDialog.Builder(this)
+                    .setMessage(getString(R.string.estado) + (partida.getEstado() == Partida.ESTADO_GANADA ? getString(R.string.wined) : getString(R.string.loss)))
+                    .setTitle(R.string.endGame)
+                    .setNeutralButton(R.string.newGameBtt, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            partida = partida.getNivel().getNewPartida(GameMemoryActivity.this);
+                            configureGridView();
+                            startTimer();
+                        }
+                    })
+                    .setPositiveButton(R.string.exit, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .setIcon(R.mipmap.ic_launcher)
+                    .setCancelable(false)
+                    .show();
+
         }
     }
 
@@ -155,6 +181,7 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
     private class Timer extends CountDownTimer {
         private final DateFormat formater = new SimpleDateFormat("mm:ss");
         private TextView target;
+        private long uintilFinished;
 
         /**
          * @param millisInFuture The number of millis in the future from the call
@@ -163,18 +190,25 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
          */
         public Timer(long millisInFuture, TextView target) {
             super(millisInFuture, 1000);
+            uintilFinished = millisInFuture;
             this.target = target;
         }
 
         @Override
         public void onTick(long millisUntilFinished) {
+            this.uintilFinished = millisUntilFinished;
             target.setText(String.format(getString(R.string.timeLeft), formater.format(new Date(millisUntilFinished))));
         }
 
         @Override
         public void onFinish() {
+            uintilFinished = 0;
             target.setText(String.format(getString(R.string.timeLeft), "0"));// sino se queda en 1
             partida.finalizar();
+        }
+
+        public long getUnintilFinished() {
+            return uintilFinished;
         }
     }
 }
