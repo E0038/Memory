@@ -128,12 +128,12 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("partida", partida);
-        outState.putLong("remain", timer.getUnintilFinished());
+        outState.putSerializable(KEY_PARTIDA, partida);
+        outState.putLong(KEY_REMAIN, timer.getUnintilFinished());
 
     }
 
-    public void onFinalize() {
+    public void onPartidaEnd() {
         timer.cancel();
         if (!(this.isFinishing() || isDestroyed())) {
             new AlertDialog.Builder(this)
@@ -153,10 +153,8 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
                             finish();
                         }
                     })
-                    .setIcon(R.mipmap.ic_launcher)
                     .setCancelable(false)
                     .show();
-
         }
     }
 
@@ -181,7 +179,7 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
     private class Timer extends CountDownTimer {
         private final DateFormat formater = new SimpleDateFormat("mm:ss");
         private TextView target;
-        private long uintilFinished;
+        private long unintilFinished;
 
         /**
          * @param millisInFuture The number of millis in the future from the call
@@ -190,25 +188,25 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
          */
         public Timer(long millisInFuture, TextView target) {
             super(millisInFuture, 1000);
-            uintilFinished = millisInFuture;
+            unintilFinished = millisInFuture;
             this.target = target;
         }
 
         @Override
         public void onTick(long millisUntilFinished) {
-            this.uintilFinished = millisUntilFinished;
+            this.unintilFinished = millisUntilFinished;
             target.setText(String.format(getString(R.string.timeLeft), formater.format(new Date(millisUntilFinished))));
         }
 
         @Override
         public void onFinish() {
-            uintilFinished = 0;
+            unintilFinished = 0;
             target.setText(String.format(getString(R.string.timeLeft), "0"));// sino se queda en 1
             partida.finalizar();
         }
 
         public long getUnintilFinished() {
-            return uintilFinished;
+            return unintilFinished;
         }
     }
 }

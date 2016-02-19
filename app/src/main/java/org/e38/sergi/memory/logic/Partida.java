@@ -71,7 +71,7 @@ public class Partida implements Serializable {
         if (estado == ESTADO_ENCURSO) {
             estado = isWined() ? ESTADO_GANADA : ESTADO_PERDIDA;
         }
-        activity.onFinalize();
+        activity.onPartidaEnd();
     }
 
     public void stop() {
