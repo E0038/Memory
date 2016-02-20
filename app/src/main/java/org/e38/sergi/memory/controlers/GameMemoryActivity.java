@@ -147,12 +147,13 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
                             startTimer();
                         }
                     })
-                    .setPositiveButton(R.string.exit, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(R.string.volver, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             finish();
                         }
                     })
+
                     .setCancelable(false)
                     .show();
         }
