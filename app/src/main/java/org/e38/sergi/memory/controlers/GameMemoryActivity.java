@@ -54,7 +54,6 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
         } else {
             initConfiguration();
         }
-        findViewById(R.id.progressBarGameLoading).setVisibility(View.GONE);
     }
 
     private void initConfiguration() {
