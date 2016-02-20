@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 
 import org.e38.sergi.memory.R;
 import org.e38.sergi.memory.controlers.AbstractMemoryActivity;
-import org.e38.sergi.memory.controlers.GameMemoryActivity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -47,6 +46,12 @@ public class Partida implements Serializable {
         repartirCartar();
     }
 
+    /**
+     * Este metedo debe ser utilizado <b>OBLIGATORIAMENTE</b> despues de deserializar una instancia
+     * para restaurar completamente el estado de la Partida
+     *
+     * @param activity the activity
+     */
     public void onRestore(AbstractMemoryActivity activity) {
         this.activity = activity;
         clickLocker = new Object();
