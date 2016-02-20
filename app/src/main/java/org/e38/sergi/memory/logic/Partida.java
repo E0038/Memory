@@ -3,6 +3,7 @@ package org.e38.sergi.memory.logic;
 import android.os.AsyncTask;
 
 import org.e38.sergi.memory.R;
+import org.e38.sergi.memory.controlers.AbstractMemoryActivity;
 import org.e38.sergi.memory.controlers.GameMemoryActivity;
 
 import java.io.Serializable;
@@ -17,13 +18,16 @@ public class Partida implements Serializable {
     public static final int ESTADO_ENCURSO = 0,
             ESTADO_TERMINADA = 1,// finalizado por el usario pero no perdida, no esta en uso
             ESTADO_GANADA = 2, ESTADO_PERDIDA = 3;
-    private final Object clickLocker = new Object();
     private Integer estado;
     private List<Carta> cartas;
     private Dificultat nivel;
     private List<Integer> solvedIdx;
     private List<Integer> cardClickIdx;
-    private GameMemoryActivity activity;
+
+    private transient Object clickLocker = new Object();
+    private transient AbstractMemoryActivity activity;
+    private transient android.os.Handler segundaCartaHandler = new android.os.Handler();
+
     private int[] cartasIds = new int[]{//max: 24
             R.drawable.c0, R.drawable.c1,
             R.drawable.c2, R.drawable.c3,
@@ -33,7 +37,7 @@ public class Partida implements Serializable {
             R.drawable.c10, R.drawable.c11
     };
 
-    private Partida(Dificultat dificultat, GameMemoryActivity activity) {
+    private Partida(Dificultat dificultat, AbstractMemoryActivity activity) {
         this.nivel = dificultat;
         estado = ESTADO_ENCURSO;
         this.activity = activity;
@@ -43,9 +47,17 @@ public class Partida implements Serializable {
         repartirCartar();
     }
 
+    public void onRestore(AbstractMemoryActivity activity) {
+        this.activity = activity;
+        clickLocker = new Object();
+        segundaCartaHandler = new android.os.Handler();
+        for (Carta c : cartas) {
+            c.onRestore(this.activity);
+        }
+    }
+
     public Carta[] getCartes() {
-        Carta[] carts = cartas.toArray(new Carta[cartas.size()]);
-        return carts;
+        return cartas.toArray(new Carta[cartas.size()]);
     }
 
     public Carta getCarta(int position) {
@@ -56,15 +68,13 @@ public class Partida implements Serializable {
         return nivel;
     }
 
-    public void setEstado(Integer estado) {
-        this.estado = estado;
-    }
-
     private void repartirCartar() {
         for (int i = 0; i < nivel.numCartas; i++) {
             cartas.add(new Carta(activity, cartasIds[i / 2]));
         }
-        Collections.shuffle(cartas);
+        for (int i = 0; i < 4; i++) {//quedaba predictible barrajando una sola vez asi que se ahora lo repito varias
+            Collections.shuffle(cartas);
+        }
     }
 
     public void finalizar() {
@@ -80,9 +90,7 @@ public class Partida implements Serializable {
 
     /**
      * calcula si la partida esta ganada
-     * Este metodo ningun asigna el estado aunque este ganada
-     *
-     * @return
+     * Este metodo no assigna el estado aunque este ganada
      */
     public synchronized boolean isWined() {
         return solvedIdx.size() == cartas.size();
@@ -90,6 +98,10 @@ public class Partida implements Serializable {
 
     public Integer getEstado() {
         return estado;
+    }
+
+    public void setEstado(Integer estado) {
+        this.estado = estado;
     }
 
     public void click(final int position) {
@@ -113,7 +125,6 @@ public class Partida implements Serializable {
         }.execute();//esto hace que los clicks se procesen después de la actualizar el grid, cuando el mainThread vuelva a estar libre
     }
 
-
     private void __click(int position) {
         //no destarpar ninguna carta aqui ya an sido destapadas en el metodo publico
         if (solvedIdx.contains(position)) {
@@ -123,8 +134,6 @@ public class Partida implements Serializable {
             segundaCarta(position);
         }
     }
-
-    private final android.os.Handler segundaCartaHandler = new android.os.Handler();
 
     private void segundaCarta(int position) {
         if (cardClickIdx.get(0) != position) {// si la carta es diferente sino la ignoramos
@@ -151,7 +160,7 @@ public class Partida implements Serializable {
         }
     }
 
-    public enum Dificultat {
+    public enum Dificultat implements Serializable {
         FACIL(12, 200, 3),
         NORMAL(20, 120, 4),
         DIFICIL(24, 90, 4);
@@ -168,7 +177,7 @@ public class Partida implements Serializable {
             return numCartas;
         }
 
-        public Partida getNewPartida(GameMemoryActivity activity) {
+        public Partida getNewPartida(AbstractMemoryActivity activity) {
             return new Partida(this, activity);
         }
 

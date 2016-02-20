@@ -5,9 +5,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -27,7 +28,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class GameMemoryActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class GameMemoryActivity extends AbstractMemoryActivity implements AdapterView.OnItemClickListener {
 
     public static final String KEY_DIFICULTAT = "DIFICULTAT";
 
@@ -37,6 +38,7 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
     private int cardWith, cardHeight;
     private Timer timer;
 
+    @Override
     public GridView getMemoryGridView() {
         return memoryGridView;
     }
@@ -49,6 +51,8 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
         setContentView(R.layout.activity_game_memory);
         if (savedInstanceState != null) {
             partida = (Partida) savedInstanceState.getSerializable(KEY_PARTIDA);
+            assert partida != null;
+            partida.onRestore(this);
             configureGridView();
             startTimer(savedInstanceState.getLong(KEY_REMAIN));
         } else {
@@ -76,6 +80,27 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
     private void startTimer() {
         timer = new Timer(partida.getNivel().getSegundos() * 1000, (TextView) findViewById(R.id.textTimeLeft));
         timer.start();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // return super.onCreateOptionsMenu(menu);
+        return false;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            //Toast.makeText(this,"Menu Key",Toast.LENGTH_SHORT).show();
+            return true;
+        } else {
+            return super.onKeyUp(keyCode, event);
+        }
     }
 
     private void configurePartida() {
@@ -116,6 +141,7 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
         refreshItems();
     }
 
+    @Override
     public void refreshItems() {
         memoryGridView.setAdapter(new MemoryAdapter(this, partida.getCartes()));//refresh
         memoryGridView.refreshDrawableState();
@@ -132,6 +158,7 @@ public class GameMemoryActivity extends AppCompatActivity implements AdapterView
 
     }
 
+    @Override
     public void onPartidaEnd() {
         timer.cancel();
         if (!(this.isFinishing() || isDestroyed())) {

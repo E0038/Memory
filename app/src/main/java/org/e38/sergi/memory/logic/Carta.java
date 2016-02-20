@@ -5,20 +5,21 @@ import android.graphics.drawable.Drawable;
 
 import org.e38.sergi.memory.R;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.NoSuchElementException;
 
-public class Carta {
-    private Drawable realImage;
-    private Drawable hidedImage;
+public class Carta implements Serializable {
+    private transient Drawable realImage;
+    private transient Drawable hidedImage;
 
     private int cartImageId;
     private boolean destapada = false;
     private boolean solved = false;
-    private Context context;
+    private transient Context context;
 
     public Carta(Context context, int cartImageId) throws NoSuchElementException {
         this.cartImageId = cartImageId;
-
         this.context = context;
         hidedImage = AndroidVersionUtils.getDrawale(context, R.drawable.back);//metodo para unificar differences entre apis < 21 y apis > 22
         realImage = AndroidVersionUtils.getDrawale(context, cartImageId).mutate();
@@ -53,5 +54,14 @@ public class Carta {
     public void setSolved() {
         this.solved = true;
         realImage.setAlpha(0);//work on all vercions
+    }
+
+    public void onRestore(Context context) {
+        this.context = context;
+        hidedImage = AndroidVersionUtils.getDrawale(context, R.drawable.back);
+        realImage = AndroidVersionUtils.getDrawale(context, cartImageId).mutate();
+        if (solved) {
+            setSolved();
+        }
     }
 }
